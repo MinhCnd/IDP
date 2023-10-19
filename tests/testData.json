@@ -1,0 +1,391 @@
+[
+    {
+        "id": 37,
+        "annotations": [
+            {
+                "id": 3,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 86.1250310583562,
+                            "y": 39.52570254150973,
+                            "width": 3.783964627461859,
+                            "height": 1.3044288148178793,
+                            "rotation": 0
+                        },
+                        "id": "_cTkawzRlM",
+                        "from_name": "bbox",
+                        "to_name": "image",
+                        "type": "rectangle",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 86.1250310583562,
+                            "y": 39.52570254150973,
+                            "width": 3.783964627461859,
+                            "height": 1.3044288148178793,
+                            "rotation": 0,
+                            "text": [
+                                "0.00"
+                            ]
+                        },
+                        "id": "_cTkawzRlM",
+                        "from_name": "transcription",
+                        "to_name": "image",
+                        "type": "textarea",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 86.1250310583562,
+                            "y": 39.52570254150973,
+                            "width": 3.783964627461859,
+                            "height": 1.3044288148178793,
+                            "rotation": 0,
+                            "labels": [
+                                "balance_still_owing"
+                            ]
+                        },
+                        "id": "_cTkawzRlM",
+                        "from_name": "label",
+                        "to_name": "image",
+                        "type": "labels",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.65317772646931,
+                            "y": 49.601262102614136,
+                            "width": 4.083812203993239,
+                            "height": 1.464701350737058,
+                            "rotation": 0
+                        },
+                        "id": "crH3deG3g5",
+                        "from_name": "bbox",
+                        "to_name": "image",
+                        "type": "rectangle",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.65317772646931,
+                            "y": 49.601262102614136,
+                            "width": 4.083812203993239,
+                            "height": 1.464701350737058,
+                            "rotation": 0,
+                            "labels": [
+                                "water_consumption"
+                            ]
+                        },
+                        "id": "crH3deG3g5",
+                        "from_name": "label",
+                        "to_name": "image",
+                        "type": "labels",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.65317772646931,
+                            "y": 49.601262102614136,
+                            "width": 4.083812203993239,
+                            "height": 1.464701350737058,
+                            "rotation": 0,
+                            "text": [
+                                "36.5"
+                            ]
+                        },
+                        "id": "crH3deG3g5",
+                        "from_name": "transcription",
+                        "to_name": "image",
+                        "type": "textarea",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.55087161504154,
+                            "y": 50.91168933391111,
+                            "width": 4.358124070776996,
+                            "height": 1.306532208606803,
+                            "rotation": 0
+                        },
+                        "id": "JwFp5qb-Ck",
+                        "from_name": "bbox",
+                        "to_name": "image",
+                        "type": "rectangle",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.55087161504154,
+                            "y": 50.91168933391111,
+                            "width": 4.358124070776996,
+                            "height": 1.306532208606803,
+                            "rotation": 0,
+                            "labels": [
+                                "wastewater_consumption"
+                            ]
+                        },
+                        "id": "JwFp5qb-Ck",
+                        "from_name": "label",
+                        "to_name": "image",
+                        "type": "labels",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.55087161504154,
+                            "y": 50.91168933391111,
+                            "width": 4.358124070776996,
+                            "height": 1.306532208606803,
+                            "rotation": 0,
+                            "text": [
+                                "49.83"
+                            ]
+                        },
+                        "id": "JwFp5qb-Ck",
+                        "from_name": "transcription",
+                        "to_name": "image",
+                        "type": "textarea",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.44012803863804,
+                            "y": 52.164077416428825,
+                            "width": 4.247691828207981,
+                            "height": 1.0913571607034107,
+                            "rotation": 0
+                        },
+                        "id": "Z48GGMFSPt",
+                        "from_name": "bbox",
+                        "to_name": "image",
+                        "type": "rectangle",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.44012803863804,
+                            "y": 52.164077416428825,
+                            "width": 4.247691828207981,
+                            "height": 1.0913571607034107,
+                            "rotation": 0,
+                            "labels": [
+                                "wastewater_fixed"
+                            ]
+                        },
+                        "id": "Z48GGMFSPt",
+                        "from_name": "label",
+                        "to_name": "image",
+                        "type": "labels",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 85.44012803863804,
+                            "y": 52.164077416428825,
+                            "width": 4.247691828207981,
+                            "height": 1.0913571607034107,
+                            "rotation": 0,
+                            "text": [
+                                "23.15"
+                            ]
+                        },
+                        "id": "Z48GGMFSPt",
+                        "from_name": "transcription",
+                        "to_name": "image",
+                        "type": "textarea",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 84.92537014412596,
+                            "y": 53.3871985413495,
+                            "width": 4.825855261050547,
+                            "height": 1.0913571607034163,
+                            "rotation": 0
+                        },
+                        "id": "X4xzNV0VmM",
+                        "from_name": "bbox",
+                        "to_name": "image",
+                        "type": "rectangle",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 84.92537014412596,
+                            "y": 53.3871985413495,
+                            "width": 4.825855261050547,
+                            "height": 1.0913571607034163,
+                            "rotation": 0,
+                            "labels": [
+                                "balance_current_charges"
+                            ]
+                        },
+                        "id": "X4xzNV0VmM",
+                        "from_name": "label",
+                        "to_name": "image",
+                        "type": "labels",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 84.92537014412596,
+                            "y": 53.3871985413495,
+                            "width": 4.825855261050547,
+                            "height": 1.0913571607034163,
+                            "rotation": 0,
+                            "text": [
+                                "109.48"
+                            ]
+                        },
+                        "id": "X4xzNV0VmM",
+                        "from_name": "transcription",
+                        "to_name": "image",
+                        "type": "textarea",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 84.81366098614171,
+                            "y": 61.85278693334406,
+                            "width": 4.9979903305363385,
+                            "height": 1.7145973426638257,
+                            "rotation": 0
+                        },
+                        "id": "5XJtIlQN2v",
+                        "from_name": "bbox",
+                        "to_name": "image",
+                        "type": "rectangle",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 84.81366098614171,
+                            "y": 61.85278693334406,
+                            "width": 4.9979903305363385,
+                            "height": 1.7145973426638257,
+                            "rotation": 0,
+                            "labels": [
+                                "total_due"
+                            ]
+                        },
+                        "id": "5XJtIlQN2v",
+                        "from_name": "label",
+                        "to_name": "image",
+                        "type": "labels",
+                        "origin": "manual"
+                    },
+                    {
+                        "original_width": 1653,
+                        "original_height": 2339,
+                        "image_rotation": 0,
+                        "value": {
+                            "x": 84.81366098614171,
+                            "y": 61.85278693334406,
+                            "width": 4.9979903305363385,
+                            "height": 1.7145973426638257,
+                            "rotation": 0,
+                            "text": [
+                                "109.48"
+                            ]
+                        },
+                        "id": "5XJtIlQN2v",
+                        "from_name": "transcription",
+                        "to_name": "image",
+                        "type": "textarea",
+                        "origin": "manual"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2023-10-12T00:38:04.866960Z",
+                "updated_at": "2023-10-15T20:59:32.365362Z",
+                "draft_created_at": null,
+                "lead_time": 1829.7559999999999,
+                "prediction": {},
+                "result_count": 0,
+                "unique_id": "ecb42cf4-d8fd-4580-83b2-e2dd7fcc3991",
+                "import_id": null,
+                "last_action": null,
+                "task": 37,
+                "project": 3,
+                "updated_by": 1,
+                "parent_prediction": null,
+                "parent_annotation": null,
+                "last_created_by": null
+            }
+        ],
+        "file_upload": "befd315f-1-1.png",
+        "drafts": [],
+        "predictions": [],
+        "data": {
+            "ocr": "\/data\/upload\/3\/befd315f-1-1.png"
+        },
+        "meta": {},
+        "created_at": "2023-10-12T00:37:57.741153Z",
+        "updated_at": "2023-10-15T20:59:32.447726Z",
+        "inner_id": 1,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 0,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 3,
+        "updated_by": 1,
+        "comment_authors": []
+    }
+]
