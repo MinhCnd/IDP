@@ -1,14 +1,14 @@
-from typing import Union
 from transformers import AutoModelForTokenClassification
-from fastapi import FastAPI, File, UploadFile
-import uvicorn
+from fastapi import FastAPI, UploadFile
 from pdf2image import convert_from_bytes
-from transformers import AutoModelForTokenClassification
 from transformers import AutoProcessor
-from idp.annotations.bbox_utils import normalize_box
 import pytesseract
 import torch
-from idp.annotations.bbox_utils import unnormalize_box, merge_box_extremes
+from idp.annotations.bbox_utils import (
+    unnormalize_box,
+    normalize_box,
+    merge_box_extremes,
+)
 from idp.annotations.annotation_utils import (
     Classes,
     CLASS_TO_LABEL_MAP,
@@ -75,8 +75,8 @@ async def create_upload_file(file: UploadFile):
         # Assume all pages have the same size
         img_width, img_height = images[0].size
 
-        # HACK remove texts & boxes outside of Labelling area
         def text_box_relevant(text_box_page):
+            """HACK remove texts & boxes outside of Labelling area"""
             text, box, page = text_box_page
 
             if page == 0:
@@ -156,7 +156,14 @@ async def create_upload_file(file: UploadFile):
             ]
 
             class_to_label_str_map = {v: k for k, v in LABEL_STR_TO_CLASS_MAP.items()}
-            # output = [{class_to_label_str_map[key]: {'text':'','box':[]} for key,value in CLASS_TO_LABEL_MAP.items() if key != Classes.OTHER} for page in range(pages)]
+            output = [
+                {
+                    class_to_label_str_map[key]: {"text": "", "box": []}
+                    for key, value in CLASS_TO_LABEL_MAP.items()
+                    if key != Classes.OTHER
+                }
+                for page in range(pages)
+            ]
             output = [
                 {
                     class_to_label_str_map[key]: {"text": ""}
@@ -170,7 +177,7 @@ async def create_upload_file(file: UploadFile):
                 for key, value in CLASS_TO_LABEL_MAP.items():
                     if key == Classes.OTHER:
                         continue
-                    print(key)
+
                     output[page_indx][class_to_label_str_map[key]]["text"] = "".join(
                         [
                             text
@@ -182,10 +189,24 @@ async def create_upload_file(file: UploadFile):
                             if (prediction == value and box != [0, 0, 0, 0])
                         ]
                     )
-                    # output[page_indx][class_to_label_str_map[key]]['box'] = merge_box_extremes([box for text, prediction, box in zip(true_texts[page_indx], true_predictions[page_indx], true_boxes[page_indx]) if (prediction == value and box != [0,0,0,0])])
+                    output[page_indx][class_to_label_str_map[key]][
+                        "box"
+                    ] = merge_box_extremes(
+                        [
+                            box
+                            for text, prediction, box in zip(
+                                true_texts[page_indx],
+                                true_predictions[page_indx],
+                                true_boxes[page_indx],
+                            )
+                            if (prediction == value and box != [0, 0, 0, 0])
+                        ]
+                    )
 
             # #trim empty outputs
-            item_not_empty = lambda item: len(item[1]["text"]) != 0
+            def item_not_empty(item):
+                return len(item[1]["text"]) != 0
+
             filtered_output = [
                 dict(filter(item_not_empty, page_output.items()))
                 for page_output in output
@@ -196,5 +217,3 @@ async def create_upload_file(file: UploadFile):
         return {"message": "There was an error reading the file"}
     finally:
         file.file.close()
-
-    return {"pages": len(images)}

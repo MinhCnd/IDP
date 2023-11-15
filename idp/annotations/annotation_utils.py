@@ -102,7 +102,7 @@ def ls_annotations_to_layoutlmv3(
             elif result["from_name"] == "label":
                 if len(result["value"]["labels"]) != 0:
                     transcriptions[result_id]["label"] = result["value"]["labels"][0]
-        except:
+        except ValueError:
             print("Error processing annotation")
 
     # Remove values with no labels
