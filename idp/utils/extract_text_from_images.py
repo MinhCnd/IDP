@@ -6,8 +6,12 @@ from pathlib import Path
 from uuid import uuid4
 import argparse
 
-parser = argparse.ArgumentParser("Tessaract OCR")
-parser.add_argument("input")
+parser = argparse.ArgumentParser(
+    prog="Tessaract OCR",
+    description="Go through images in a directory, perform ocr on each and store output in a json file",
+)
+parser.add_argument("input", help="input folder")
+parser.add_argument("output", help="output file name")
 
 args = parser.parse_args()
 
@@ -24,19 +28,9 @@ def create_image_url(filepath):
     return f"http://localhost:8081/{filename}"
 
 
-def crop_image(
-    image: Image, left_percent, top_percent, width_percent, height_percent
-) -> Image:
-    left = image.width * left_percent
-    top = image.height * top_percent
-    right = left + (image.width * width_percent)
-    bottom = top + (image.height * height_percent)
-    print(left, top, right, bottom)
-    return image.crop((left, top, right, bottom))
-
-
-def convert_to_ls(image, tesseract_output, per_level="block_num"):
+def convert_tesseract_to_ls(image, tesseract_output, per_level="block_num"):
     """
+    Convert Tesseract output to label studio format
     :param image: PIL image object
     :param tesseract_output: the output from tesseract
     :param per_level: control the granularity of bboxes from tesseract
@@ -57,14 +51,9 @@ def convert_to_ls(image, tesseract_output, per_level="block_num"):
             }
 
             words, confidences = [], []
-            for j, curr_id in enumerate(tesseract_output[per_level]):
-                if curr_id != tesseract_output[per_level][i]:
-                    continue
-                word = tesseract_output["text"][j]
-                confidence = tesseract_output["conf"][j]
-                words.append(word)
-                if confidence != "-1":
-                    confidences.append(float(confidence / 100.0))
+
+            words = [tesseract_output["text"][i]]
+            confidences = [tesseract_output["conf"][i]]
 
             text = " ".join(words).strip()
             if not text:
@@ -104,24 +93,12 @@ tasks = []
 # collect the images from the image directory
 for f in Path(args.input).glob("*.png"):
     with Image.open(f.absolute()) as image:
-        unit_width = 1 / image.width
-        unit_height = 1 / image.height
-        if f.name.endswith("-1.png"):
-            cropped_image = crop_image(image, 0.39, 0.36, 0.55, 0.31)
-            tesseract_output = pytesseract.image_to_data(
-                image, output_type=pytesseract.Output.DICT
-            )
-            task = convert_to_ls(image, tesseract_output, per_level="line_num")
-            tasks.append(task)
-        else:
-            cropped_image = crop_image(image, 0.085, 0.051, 0.413, 0.272)
-            tesseract_output = pytesseract.image_to_data(
-                image, output_type=pytesseract.Output.DICT
-            )
-            task = convert_to_ls(image, tesseract_output, per_level="line_num")
-            tasks.append(task)
-
+        tesseract_output = pytesseract.image_to_data(
+            image, output_type=pytesseract.Output.DICT
+        )
+        task = convert_tesseract_to_ls(image, tesseract_output, per_level="word_num")
+        tasks.append(task)
 
 # create a file to import into Label Studio
-with open("ocr_tasks.json", mode="w") as f:
+with open(args.output, mode="w") as f:
     json.dump(tasks, f, indent=2)

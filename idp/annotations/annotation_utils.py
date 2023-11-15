@@ -16,8 +16,8 @@ class Classes(Enum):
     WASTEWATER_FIXED = 4
     BALANCE_CURRENT_CHARGES = 5
     TOTAL_DUE = 6
-    WATER_CONSUMPTION_DETAILS = 7  
-    WASTEWATER_CONSUMPTION_DETAILS = 8  
+    WATER_CONSUMPTION_DETAILS = 7
+    WASTEWATER_CONSUMPTION_DETAILS = 8
     WASTEWATER_FIXED_DETAILS = 9
     THIS_READING = 10
     LAST_READING = 11
@@ -35,7 +35,7 @@ LABEL_STR_TO_CLASS_MAP = {
     "wastewater_consumption_details": Classes.WASTEWATER_CONSUMPTION_DETAILS,
     "wastewater_fixed_details": Classes.WASTEWATER_FIXED_DETAILS,
     "this_reading": Classes.THIS_READING,
-    "last_reading": Classes.LAST_READING
+    "last_reading": Classes.LAST_READING,
 }
 
 CLASS_TO_LABEL_MAP = {
@@ -50,7 +50,7 @@ CLASS_TO_LABEL_MAP = {
     Classes.WASTEWATER_CONSUMPTION_DETAILS: "B-WASTEWATER_CONSUMPTION_DETAILS",
     Classes.WASTEWATER_FIXED_DETAILS: "B-WASTEWATER_FIXED_DETAILS",
     Classes.THIS_READING: "B-THIS_READING",
-    Classes.LAST_READING: "B-LAST_READING"
+    Classes.LAST_READING: "B-LAST_READING",
 }
 
 
@@ -103,13 +103,13 @@ def ls_annotations_to_layoutlmv3(
                 if len(result["value"]["labels"]) != 0:
                     transcriptions[result_id]["label"] = result["value"]["labels"][0]
         except:
-            print('Error processing annotation')
+            print("Error processing annotation")
 
     # Remove values with no labels
     def labelPresent(k_v_pairs):
         _, value = k_v_pairs
         return "label" in value.keys()
-    
+
     transcriptions = dict(filter(labelPresent, transcriptions.items()))
 
     # # TODO: REMOVE IGNORE ON SENTENCES
