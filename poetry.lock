@@ -1273,6 +1273,26 @@ files = [
 tests = ["coverage", "coveralls", "dill", "mock", "nose"]
 
 [[package]]
+name = "fastapi"
+version = "0.104.1"
+description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "fastapi-0.104.1-py3-none-any.whl", hash = "sha256:752dc31160cdbd0436bb93bad51560b57e525cbb1d4bbf6f4904ceee75548241"},
+    {file = "fastapi-0.104.1.tar.gz", hash = "sha256:e5e4540a7c5e1dcfbbcf5b903c234feddcdcd881f191977a1c5dfd917487e7ae"},
+]
+
+[package.dependencies]
+anyio = ">=3.7.1,<4.0.0"
+pydantic = ">=1.7.4,<1.8 || >1.8,<1.8.1 || >1.8.1,<2.0.0 || >2.0.0,<2.0.1 || >2.0.1,<2.1.0 || >2.1.0,<3.0.0"
+starlette = ">=0.27.0,<0.28.0"
+typing-extensions = ">=4.8.0"
+
+[package.extras]
+all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.5)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
+
+[[package]]
 name = "fastjsonschema"
 version = "2.18.1"
 description = "Fastest Python implementation of JSON schema"
@@ -1813,6 +1833,17 @@ files = [
 googleapis-common-protos = ">=1.5.5"
 grpcio = ">=1.48.2"
 protobuf = ">=3.12.0"
+
+[[package]]
+name = "h11"
+version = "0.14.0"
+description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
+    {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
+]
 
 [[package]]
 name = "h5py"
@@ -3833,6 +3864,20 @@ files = [
 ]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.6"
+description = "A streaming multipart parser for Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "python_multipart-0.0.6-py3-none-any.whl", hash = "sha256:ee698bab5ef148b0a760751c261902cd096e57e10558e11aca17646b74ee1c18"},
+    {file = "python_multipart-0.0.6.tar.gz", hash = "sha256:e9925a80bb668529f1b67c7fdb0a5dacdd7cbfc6fb0bff3ea443fe22bdd62132"},
+]
+
+[package.extras]
+dev = ["atomicwrites (==1.2.1)", "attrs (==19.2.0)", "coverage (==6.5.0)", "hatch", "invoke (==1.7.3)", "more-itertools (==4.3.0)", "pbr (==4.3.0)", "pluggy (==1.0.0)", "py (==1.11.0)", "pytest (==7.2.0)", "pytest-cov (==4.0.0)", "pytest-timeout (==2.1.0)", "pyyaml (==5.1)"]
+
+[[package]]
 name = "pytz"
 version = "2019.3"
 description = "World timezone definitions, modern and historical"
@@ -4821,6 +4866,23 @@ pure-eval = "*"
 tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
+name = "starlette"
+version = "0.27.0"
+description = "The little ASGI library that shines."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "starlette-0.27.0-py3-none-any.whl", hash = "sha256:918416370e846586541235ccd38a474c08b80443ed31c578a418e2209b3eef91"},
+    {file = "starlette-0.27.0.tar.gz", hash = "sha256:6a6b0d042acb8d469a01eba54e9cda6cbd24ac602c4cd016723117d6a7e73b75"},
+]
+
+[package.dependencies]
+anyio = ">=3.4.0,<5"
+
+[package.extras]
+full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyaml"]
+
+[[package]]
 name = "sympy"
 version = "1.12"
 description = "Computer algebra system (CAS) in Python"
@@ -5451,6 +5513,25 @@ files = [
 ua-parser = ">=0.10.0"
 
 [[package]]
+name = "uvicorn"
+version = "0.24.0"
+description = "The lightning-fast ASGI server."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "uvicorn-0.24.0-py3-none-any.whl", hash = "sha256:3d19f13dfd2c2af1bfe34dd0f7155118ce689425fdf931177abe832ca44b8a04"},
+    {file = "uvicorn-0.24.0.tar.gz", hash = "sha256:368d5d81520a51be96431845169c225d771c9dd22a58613e1a181e6c4512ac33"},
+]
+
+[package.dependencies]
+click = ">=7.0"
+h11 = ">=0.8"
+typing-extensions = {version = ">=4.0", markers = "python_version < \"3.11\""}
+
+[package.extras]
+standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.4)"]
+
+[[package]]
 name = "wcwidth"
 version = "0.2.8"
 description = "Measures the displayed width of unicode strings in a terminal"
@@ -5831,4 +5912,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.0"
-content-hash = "a79712177483e6bbc0961a5a63c52c9b1c8a3153227ce1ab4b1bec916c3b1bb9"
+content-hash = "fae98b5b194e59a90fc39bf3a7cb1d5a015b125fe56a9a55519ae0324c774b84"
