@@ -27,13 +27,11 @@ def is_box_a_within_box_b(box_a, box_b):
     left_a, top_a, right_a, bottom_a = box_a
     left_b, top_b, right_b, bottom_b = box_b
 
+    a_within_b_horizontal = left_b <= left_a and right_b >= right_a
+    a_within_b_vertical = top_b <= top_a and bottom_b >= bottom_a
+
     # Check if Box B contains box A
-    return (
-        left_b <= left_a
-        and top_b <= top_a
-        and right_b >= right_a
-        and bottom_b >= bottom_a
-    )
+    return a_within_b_horizontal and a_within_b_vertical
 
 
 def get_text_box_pairs(image):
@@ -134,14 +132,16 @@ async def create_upload_file(file: UploadFile):
             true_predictions = [
                 [
                     model.config.id2label[pred]
-                    for pred in page_preds[1 : pad_indexes[page_index]]
+                    for pred in page_preds[1 : pad_indexes[page_index]]  # noqa: E203
                 ]
                 for page_index, page_preds in enumerate(predictions)
             ]
             true_boxes = [
                 [
                     unnormalize_box(box, img_width, img_height)
-                    for box in page_token_boxes[1 : pad_indexes[page_index]]
+                    for box in page_token_boxes[
+                        1 : pad_indexes[page_index]  # noqa: E203
+                    ]
                 ]
                 for page_index, page_token_boxes in enumerate(token_boxes)
             ]
@@ -149,7 +149,7 @@ async def create_upload_file(file: UploadFile):
                 [
                     processor.tokenizer.decode([value])
                     for index, value in enumerate(
-                        page_input_ids[1 : pad_indexes[page_index]]
+                        page_input_ids[1 : pad_indexes[page_index]]  # noqa: E203
                     )
                 ]
                 for page_index, page_input_ids in enumerate(pages_input_ids)

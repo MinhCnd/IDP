@@ -2,6 +2,26 @@ from math import floor
 from typing import List
 
 
+def label_studio_bbx_to_lmv3(
+    x: float, y: float, width: float, height: float
+) -> List[int]:
+    """
+    Convert bounding box data from Label Studio to LayoutLMv3 format
+
+    Input:
+    x - X-pos of top left corner of bounding box, max 100
+    y - Y-pos of top left corner of bounding box, max 100
+    width - width of bounding box, max 100
+    height - height of bounding box, max 100
+    """
+    return [
+        int(floor(x * 10)),
+        int(floor(y * 10)),
+        int(floor((x + width) * 10)),
+        int(floor((y + height) * 10)),
+    ]
+
+
 def unnormalize_box(bbox: List[int], width: int, height: int) -> List[int]:
     return [
         int(floor(width * (bbox[0] / 1000))),
