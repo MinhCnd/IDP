@@ -3,7 +3,7 @@ from enum import Enum
 from PIL import Image
 import re
 from pathlib import Path
-
+from pathlib import Path
 from idp.annotations.bbox_utils import label_studio_bbx_to_lmv3
 from idp.annotations.image_utils import normalize_image_for_layoutlmv3
 
