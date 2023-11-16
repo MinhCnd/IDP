@@ -1,7 +1,10 @@
 from transformers import AutoModelForTokenClassification
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, HTTPException
 from pdf2image import convert_from_bytes
 from transformers import AutoProcessor
+import re
+
+from typing import Dict, Union
 import pytesseract
 import torch
 from idp.annotations.bbox_utils import (
@@ -55,6 +58,98 @@ def get_text_box_pairs(image):
             texts.append(tesseract_output["text"][i])
             boxes.append(bbox)
     return (texts, boxes)
+
+
+def clean_model_output(output: Dict[str, any]) -> Dict[str, any]:
+    """Clean model's output to value and strings where appropriate"""
+    try:
+        class_to_label = {v: k for k, v in LABEL_STR_TO_CLASS_MAP.items()}
+        cleaned_output = {}
+        for key in list(
+            filter(
+                lambda key: key
+                in [
+                    class_to_label[Classes.BALANCE_STILL_OWING],
+                    class_to_label[Classes.WATER_CONSUMPTION],
+                    class_to_label[Classes.WASTEWATER_CONSUMPTION],
+                    class_to_label[Classes.WASTEWATER_FIXED],
+                    class_to_label[Classes.BALANCE_CURRENT_CHARGES],
+                    class_to_label[Classes.TOTAL_DUE],
+                ],
+                output.keys(),
+            )
+        ):
+            matched_output = re.search(r"(\d+.\d+)(\scr)?", output[key]["text"])
+            if matched_output.groups() is not None:
+                cleaned_output[key] = float(matched_output.groups()[0]) * (
+                    -1 if matched_output.groups()[1] else 1
+                )
+
+        for key in list(
+            filter(
+                lambda key: key
+                in [
+                    class_to_label[Classes.WATER_CONSUMPTION_DETAILS],
+                    class_to_label[Classes.WASTEWATER_CONSUMPTION_DETAILS],
+                ],
+                output.keys(),
+            )
+        ):
+            matched_output = re.search(r"\d+.\d+(?=\skL)", output[key]["text"])
+            cleaned_output[key] = (
+                float(matched_output.group()) if matched_output else None
+            )
+
+        key = class_to_label[Classes.WASTEWATER_FIXED_DETAILS]
+        if key in output.keys():
+            matched_output = re.search(r"\d+(?=\sdays)", output[key]["text"])
+            cleaned_output[key] = (
+                float(matched_output.group()) if matched_output else None
+            )
+        else:
+            cleaned_output[key] = None
+
+        for key in list(
+            filter(
+                lambda key: key
+                in [
+                    class_to_label[Classes.THIS_READING],
+                    class_to_label[Classes.LAST_READING],
+                ],
+                output.keys(),
+            )
+        ):
+            matched_output = re.search(r"\d{1,2}-\w{3}-\d{1,2}", output[key]["text"])
+            cleaned_output[key] = matched_output.group() if matched_output else None
+
+        return cleaned_output
+
+    except ValueError:
+        print("Unable to clean model output")
+
+
+def validate_model_output(output: Dict[str, Union[float, str, None]]) -> bool:
+    """Perform numerical validation that the final output looks correct"""
+    class_to_label = {v: k for k, v in LABEL_STR_TO_CLASS_MAP.items()}
+
+    balance_current_charges = (
+        output[class_to_label[Classes.WATER_CONSUMPTION]]
+        + output[class_to_label[Classes.WASTEWATER_CONSUMPTION]]
+        + output[class_to_label[Classes.WASTEWATER_FIXED]]
+    )
+
+    balance_current_charges_correct = (
+        balance_current_charges
+        == output[class_to_label[Classes.BALANCE_CURRENT_CHARGES]]
+    )
+
+    total_due = (
+        output[class_to_label[Classes.BALANCE_STILL_OWING]] + balance_current_charges
+    )
+
+    total_due_correct = total_due == output[class_to_label[Classes.TOTAL_DUE]]
+
+    return balance_current_charges_correct and total_due_correct
 
 
 @app.post("/uploadfile/")
@@ -212,7 +307,13 @@ async def create_upload_file(file: UploadFile):
                 for page_output in output
             ]
 
-            return filtered_output
+            # Convert model output to usable format
+            cleaned_output = list(map(clean_model_output, filtered_output))
+            flattened_output = cleaned_output[0] | cleaned_output[1]
+            if not validate_model_output(flattened_output):
+                raise HTTPException(status_code=422, detail="Error validating output")
+            return flattened_output
+
     except Exception:
         return {"message": "There was an error reading the file"}
     finally:
