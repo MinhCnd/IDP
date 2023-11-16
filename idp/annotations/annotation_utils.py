@@ -3,7 +3,6 @@ from enum import Enum
 from PIL import Image
 import re
 from pathlib import Path
-
 from idp.annotations.bbox_utils import label_studio_bbx_to_lmv3
 from idp.annotations.image_utils import normalize_image_for_layoutlmv3
 
@@ -102,7 +101,7 @@ def ls_annotations_to_layoutlmv3(
             elif result["from_name"] == "label":
                 if len(result["value"]["labels"]) != 0:
                     transcriptions[result_id]["label"] = result["value"]["labels"][0]
-        except:
+        except ValueError:
             print("Error processing annotation")
 
     # Remove values with no labels
@@ -122,6 +121,7 @@ def ls_annotations_to_layoutlmv3(
     tokens = [
         transcription["value"]["text"][0] for transcription in transcriptions.values()
     ]
+
     bboxes = [
         label_studio_bbx_to_lmv3(
             transcription["value"]["x"],
