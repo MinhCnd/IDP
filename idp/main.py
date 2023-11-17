@@ -3,6 +3,7 @@ from fastapi import FastAPI, UploadFile, HTTPException
 from pdf2image import convert_from_bytes
 from transformers import AutoProcessor
 import re
+from os import getenv
 
 from typing import Dict, Union
 import pytesseract
@@ -18,12 +19,22 @@ from idp.annotations.annotation_utils import (
     LABEL_STR_TO_CLASS_MAP,
 )
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    print("Failed to load env var")
+
 app = FastAPI()
 
 # Instatiate model & processor
-MODEL_PATH = "C:/Projects/IDP/watercare/model_output/23_11_03_03/checkpoint-150"
-model = AutoModelForTokenClassification.from_pretrained(MODEL_PATH)
-processor = AutoProcessor.from_pretrained(MODEL_PATH, apply_ocr=False)
+model_path = getenv("MODEL_PATH")
+if model_path is None:
+    raise ImportError("MODEL_PATH env var not set")
+
+model = AutoModelForTokenClassification.from_pretrained(model_path)
+processor = AutoProcessor.from_pretrained(model_path, apply_ocr=False)
 
 
 def is_box_a_within_box_b(box_a, box_b):
