@@ -12,3 +12,11 @@ poetry run scripts\build_dataset.py <ls-annotation-file> <output-folder> --s <te
 # Run training & inference notebook
 poetry run jupyter notebook
 
+# Serve local REST API
+poetry run uvicorn idp.main:app --reload
+
+# Build docker image
+docker build -t <image_name> .
+
+# Run docker image, mapping port 8080 to container's host
+docker run --name <container_name> -d -i -t -p 8080:8080 watercare-idp
