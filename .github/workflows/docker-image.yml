@@ -35,4 +35,4 @@ jobs:
       run: docker push $IMAGE_NAME
 
     - name: Deploy image to cloud run
-      run: gcloud run deploy ${{ vars.SERVICE_NAME }} --image $IMAGE_NAME
+      run: gcloud run deploy ${{ vars.SERVICE_NAME }} --image=$IMAGE_NAME --cpu=1 --max-instances=1 --memory=4Gi --port=8080
