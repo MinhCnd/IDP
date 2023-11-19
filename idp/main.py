@@ -12,6 +12,7 @@ from idp.annotations.bbox_utils import (
     unnormalize_box,
     normalize_box,
     merge_box_extremes,
+    is_box_a_within_box_b,
 )
 from idp.annotations.annotation_utils import (
     Classes,
@@ -35,17 +36,6 @@ if model_path is None:
 
 model = AutoModelForTokenClassification.from_pretrained(model_path)
 processor = AutoProcessor.from_pretrained(model_path, apply_ocr=False)
-
-
-def is_box_a_within_box_b(box_a, box_b):
-    left_a, top_a, right_a, bottom_a = box_a
-    left_b, top_b, right_b, bottom_b = box_b
-
-    a_within_b_horizontal = left_b <= left_a and right_b >= right_a
-    a_within_b_vertical = top_b <= top_a and bottom_b >= bottom_a
-
-    # Check if Box B contains box A
-    return a_within_b_horizontal and a_within_b_vertical
 
 
 def get_text_box_pairs(image):
