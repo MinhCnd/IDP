@@ -27,7 +27,9 @@ jobs:
         service_account: '${{ secrets.SA_EMAIL }}'
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ secrets.GCP_REGION_PROJECT_REPO }}/image:latest
+      run: |
+        gcloud auth configure-docker australia-southeast2-docker.pkg.dev
+        docker build . --file Dockerfile --tag ${{ secrets.GCP_REGION_PROJECT_REPO }}/image:latest
 
     - name: Push Image to GCP Artifact Registry
       run: docker push ${{ secrets.GCP_REGION_PROJECT_REPO }}/image:latest
