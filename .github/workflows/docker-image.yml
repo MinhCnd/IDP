@@ -4,6 +4,9 @@ on:
   push:
     branches: [ "main" ]
 
+env:
+  TIMESTAMP: $(date +%s)
+
 jobs:
 
   build:
@@ -24,4 +27,7 @@ jobs:
         service_account: '${{ secrets.SA_EMAIL }}'
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $GCP_REGION_PROJECT_REPO/image:$(date +%s)
+      run: docker build . --file Dockerfile --tag ${{ secrets.GCP_REGION_PROJECT_REPO }}/image:$TIMESTAMP
+
+    - name: Push Image to GCP Artifact Registry
+      run: docker push ${{ secrets.GCP_REGION_PROJECT_REPO }}/image:$TIMESTAMP
