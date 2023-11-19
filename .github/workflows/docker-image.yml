@@ -4,9 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-env:
-  TIMESTAMP: $(date +%s)
-
 jobs:
 
   build:
@@ -26,10 +23,16 @@ jobs:
         workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
         service_account: '${{ secrets.SA_EMAIL }}'
 
+    - name: Create IMAGE_NAME environment variable
+      run: echo "IMAGE_NAME=${{ secrets.GCP_REGION_PROJECT_REPO }}/image:$(date +%s)" >> $GITHUB_ENV
+
     - name: Build the Docker image
       run: |
         gcloud auth configure-docker australia-southeast2-docker.pkg.dev
-        docker build . --file Dockerfile --tag ${{ secrets.GCP_REGION_PROJECT_REPO }}/image:latest
+        docker build . --file Dockerfile --tag $IMAGE_NAME
 
     - name: Push Image to GCP Artifact Registry
-      run: docker push ${{ secrets.GCP_REGION_PROJECT_REPO }}/image:latest
+      run: docker push $IMAGE_NAME
+
+    - name: Deploy image to cloud run
+      run: gcloud run deploy $SERVICE_NAME --image $IMAGE_NAME
