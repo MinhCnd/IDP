@@ -3,8 +3,6 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-  commit:
-    branches: [ "22-feat-fix-ci-deployment" ]
 
 env:
   TIMESTAMP: $(date +%s)
