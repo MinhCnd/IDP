@@ -28,8 +28,8 @@ jobs:
 
     - name: Download model into local directory
       run: |
-        mkdir -p app/model/
-        gcloud storage cp gs://${{ secrets.GCS_MODEL_PATH }}/* ./app/model/
+        mkdir model
+        gcloud storage cp gs://${{ secrets.GCS_MODEL_PATH }}/* ./model/
 
     - name: Build the Docker image
       run: |
