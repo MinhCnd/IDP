@@ -23,7 +23,7 @@ RUN pip install torch
 RUN apt-get -y install poppler-utils
 
 # # Inject model path into env
-RUN echo "MODEL_PATH=models/23_11_03_chkpt_150" >> .env
+RUN echo "MODEL_PATH=model" >> .env
 
 EXPOSE 8080
 
