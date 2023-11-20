@@ -27,7 +27,9 @@ jobs:
       run: echo "IMAGE_NAME=${{ secrets.GCP_REGION_PROJECT_REPO }}/image:$(date +%s)" >> $GITHUB_ENV
 
     - name: Download model into local directory
-      run: gcloud storage cp gs://${{ secrets.GCS_MODEL_PATH }}/* ./app/model/
+      run: |
+        mkdir -p app/model/
+        gcloud storage cp gs://${{ secrets.GCS_MODEL_PATH }}/* ./app/model/
 
     - name: Build the Docker image
       run: |
