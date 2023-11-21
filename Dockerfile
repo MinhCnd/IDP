@@ -22,6 +22,9 @@ RUN pip install torch
 # Install pdf2image dependency
 RUN apt-get -y install poppler-utils
 
+# Inject model path into env
+RUN echo "MODEL_PATH=$INPUT_MODEL_PATH" >> .env
+
 EXPOSE 8080
 
 # # Run the application on port 8080
