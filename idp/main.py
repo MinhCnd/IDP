@@ -34,7 +34,6 @@ model_path = getenv("MODEL_PATH")
 if model_path is None:
     raise ImportError("MODEL_PATH env var not set")
 
-print(f'loading model from {model_path}')
 model = AutoModelForTokenClassification.from_pretrained(model_path)
 processor = AutoProcessor.from_pretrained(model_path, apply_ocr=False)
 
