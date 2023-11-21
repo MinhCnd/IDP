@@ -33,11 +33,12 @@ jobs:
         gcloud storage cp gs://${{ secrets.GCS_MODEL_PATH }}/* ./model/
 
     - name: Build the Docker image
+      env:
+        MODEL_PATH: ${{ env.MODEL_PATH }}
       run: |
         gcloud auth configure-docker australia-southeast2-docker.pkg.dev
         docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}
-      with:
-        model_path: ${{ env.MODEL_PATH }}
+
 
     - name: Push Image to GCP Artifact Registry
       run: docker push ${{ env.IMAGE_NAME }}
