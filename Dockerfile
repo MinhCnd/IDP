@@ -2,6 +2,10 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# Inject model path into env
+ARG model_path
+ENV MODEL_PATH=$model_path
+
 # Install Poetry
 RUN pip install poetry
 
@@ -21,10 +25,6 @@ RUN pip install torch
 
 # Install pdf2image dependency
 RUN apt-get -y install poppler-utils
-
-# Inject model path into env
-ARG model_path
-ENV MODEL_PATH=$model_path
 
 EXPOSE 8080
 
