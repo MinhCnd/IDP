@@ -2,6 +2,9 @@ from transformers import AutoModelForTokenClassification
 from fastapi import FastAPI, UploadFile, HTTPException
 from pdf2image import convert_from_bytes
 from transformers import AutoProcessor
+
+import time
+
 import re
 from os import getenv
 
@@ -30,12 +33,13 @@ except ImportError:
 app = FastAPI()
 
 # Instatiate model & processor
-model_path = getenv("MODEL_PATH")
-if model_path is None:
-    raise ImportError("MODEL_PATH env var not set")
+MODEL_PATH = getenv("MODEL_PATH")
+PRINT_DEBUG = getenv("PRINT_DEBUG")
+if not (MODEL_PATH and PRINT_DEBUG):
+    raise ImportError("Env vars not set properly")
 
-model = AutoModelForTokenClassification.from_pretrained(model_path)
-processor = AutoProcessor.from_pretrained(model_path, apply_ocr=False)
+model = AutoModelForTokenClassification.from_pretrained(MODEL_PATH)
+processor = AutoProcessor.from_pretrained(MODEL_PATH, apply_ocr=False)
 
 
 def get_text_box_pairs(image):
@@ -156,8 +160,14 @@ def validate_model_output(output: Dict[str, Union[float, str, None]]) -> bool:
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
     try:
+        start_time = time.time()
+        curr_time = time.time()
         contents = file.file.read()
         images = convert_from_bytes(contents)
+
+        if PRINT_DEBUG:
+            print(f'DEBUG: PDF to bytes - {time.time()-curr_time:.2} sec')
+        curr_time = time.time()
 
         # Extract texts using OCR
         pages = len(images)
@@ -165,6 +175,10 @@ async def create_upload_file(file: UploadFile):
         texts = [pair[0] for pair in text_box_pairs]
         boxes = [pair[1] for pair in text_box_pairs]
         page_indexes = [[index] * len(text_arr) for index, text_arr in enumerate(texts)]
+
+        if PRINT_DEBUG:
+            print(f'DEBUG: PDF load - {time.time() - curr_time:.2} sec')
+        curr_time = time.time()
 
         # Assume all pages have the same size
         img_width, img_height = images[0].size
@@ -202,6 +216,10 @@ async def create_upload_file(file: UploadFile):
             out_texts.append(temp_texts)
             out_boxes.append(temp_boxes)
 
+        if PRINT_DEBUG:
+            print(f'DEBUG: Trim text boxes - {time.time() - curr_time:.2} sec')
+        curr_time = time.time()
+
         # Encode input
         encoding = processor(
             images=images,
@@ -211,6 +229,10 @@ async def create_upload_file(file: UploadFile):
             padding="max_length",
             return_tensors="pt",
         )
+
+        if PRINT_DEBUG:
+            print(f'DEBUG: Encode input - {(time.time() - curr_time):.2} sec')
+        curr_time = time.time()
 
         # Perform inferece
         with torch.no_grad():
@@ -308,11 +330,19 @@ async def create_upload_file(file: UploadFile):
                 for page_output in output
             ]
 
+            if PRINT_DEBUG:
+                print(f'Inference - {time.time() - curr_time:.2} sec')
+            curr_time = time.time()
+
             # Convert model output to usable format
             cleaned_output = list(map(clean_model_output, filtered_output))
             flattened_output = cleaned_output[0] | cleaned_output[1]
             if not validate_model_output(flattened_output):
                 raise HTTPException(status_code=422, detail="Error validating output")
+            
+            if PRINT_DEBUG:
+                print(f'Total time - {time.time() - start_time:.2} sec')
+            curr_time = time.time()
             return flattened_output
 
     except Exception:
