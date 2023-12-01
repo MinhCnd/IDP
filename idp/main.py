@@ -35,7 +35,7 @@ app = FastAPI()
 # Instatiate model & processor
 MODEL_PATH = getenv("MODEL_PATH")
 PRINT_DEBUG = False if not getenv("PRINT_DEBUG") else True
-if not (MODEL_PATH and PRINT_DEBUG):
+if not (MODEL_PATH):
     raise ImportError("Env vars not set properly")
 
 model = AutoModelForTokenClassification.from_pretrained(MODEL_PATH)
