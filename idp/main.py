@@ -34,7 +34,7 @@ app = FastAPI()
 
 # Instatiate model & processor
 MODEL_PATH = getenv("MODEL_PATH")
-PRINT_DEBUG = getenv("PRINT_DEBUG")
+PRINT_DEBUG = False if not getenv("PRINT_DEBUG") else True
 if not (MODEL_PATH and PRINT_DEBUG):
     raise ImportError("Env vars not set properly")
 
