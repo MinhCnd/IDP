@@ -166,7 +166,7 @@ async def create_upload_file(file: UploadFile):
         images = convert_from_bytes(contents)
 
         if PRINT_DEBUG:
-            print(f'DEBUG: PDF to bytes - {time.time()-curr_time:.2} sec')
+            print(f"DEBUG: PDF to bytes - {time.time()-curr_time:.2} sec")
         curr_time = time.time()
 
         # Extract texts using OCR
@@ -177,7 +177,7 @@ async def create_upload_file(file: UploadFile):
         page_indexes = [[index] * len(text_arr) for index, text_arr in enumerate(texts)]
 
         if PRINT_DEBUG:
-            print(f'DEBUG: PDF load - {time.time() - curr_time:.2} sec')
+            print(f"DEBUG: PDF load - {time.time() - curr_time:.2} sec")
         curr_time = time.time()
 
         # Assume all pages have the same size
@@ -217,7 +217,7 @@ async def create_upload_file(file: UploadFile):
             out_boxes.append(temp_boxes)
 
         if PRINT_DEBUG:
-            print(f'DEBUG: Trim text boxes - {time.time() - curr_time:.2} sec')
+            print(f"DEBUG: Trim text boxes - {time.time() - curr_time:.2} sec")
         curr_time = time.time()
 
         # Encode input
@@ -231,7 +231,7 @@ async def create_upload_file(file: UploadFile):
         )
 
         if PRINT_DEBUG:
-            print(f'DEBUG: Encode input - {(time.time() - curr_time):.2} sec')
+            print(f"DEBUG: Encode input - {(time.time() - curr_time):.2} sec")
         curr_time = time.time()
 
         # Perform inferece
@@ -331,7 +331,7 @@ async def create_upload_file(file: UploadFile):
             ]
 
             if PRINT_DEBUG:
-                print(f'Inference - {time.time() - curr_time:.2} sec')
+                print(f"Inference - {time.time() - curr_time:.2} sec")
             curr_time = time.time()
 
             # Convert model output to usable format
@@ -339,9 +339,9 @@ async def create_upload_file(file: UploadFile):
             flattened_output = cleaned_output[0] | cleaned_output[1]
             if not validate_model_output(flattened_output):
                 raise HTTPException(status_code=422, detail="Error validating output")
-            
+
             if PRINT_DEBUG:
-                print(f'Total time - {time.time() - start_time:.2} sec')
+                print(f"Total time - {time.time() - start_time:.2} sec")
             curr_time = time.time()
             return flattened_output
 
