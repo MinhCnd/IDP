@@ -146,22 +146,21 @@ def validate_model_output(output: Dict[str, Union[float, str, None]]) -> bool:
         + output[class_to_label[Classes.WASTEWATER_FIXED]]
     )
 
-    balance_current_charges_correct = isclose(balance_current_charges,
-                                              output[class_to_label[Classes.BALANCE_CURRENT_CHARGES]])
+    balance_current_charges_correct = isclose(
+        balance_current_charges, output[class_to_label[Classes.BALANCE_CURRENT_CHARGES]]
+    )
 
     total_due = (
         output[class_to_label[Classes.BALANCE_STILL_OWING]] + balance_current_charges
     )
 
-    total_due_correct = isclose(total_due,
-                                output[class_to_label[Classes.TOTAL_DUE]])
+    total_due_correct = isclose(total_due, output[class_to_label[Classes.TOTAL_DUE]])
 
     return balance_current_charges_correct and total_due_correct
 
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
-
     start_time = time.time()
     curr_time = time.time()
     contents = file.file.read()
@@ -191,9 +190,7 @@ async def create_upload_file(file: UploadFile):
         text, box, page = text_box_page
 
         if page == 0:
-            outer_box = normalize_box(
-                (1298, 828, 1536, 1550), img_width, img_height
-            )
+            outer_box = normalize_box((1298, 828, 1536, 1550), img_width, img_height)
             return is_box_a_within_box_b(box, outer_box)
         elif page == 1:
             outer_box = normalize_box((139, 119, 827, 1173), img_width, img_height)
@@ -260,9 +257,7 @@ async def create_upload_file(file: UploadFile):
         true_boxes = [
             [
                 unnormalize_box(box, img_width, img_height)
-                for box in page_token_boxes[
-                    1 : pad_indexes[page_index]  # noqa: E203
-                ]
+                for box in page_token_boxes[1 : pad_indexes[page_index]]  # noqa: E203
             ]
             for page_index, page_token_boxes in enumerate(token_boxes)
         ]
@@ -329,8 +324,7 @@ async def create_upload_file(file: UploadFile):
             return len(item[1]["text"]) != 0
 
         filtered_output = [
-            dict(filter(item_not_empty, page_output.items()))
-            for page_output in output
+            dict(filter(item_not_empty, page_output.items())) for page_output in output
         ]
 
         if PRINT_DEBUG:
@@ -343,11 +337,10 @@ async def create_upload_file(file: UploadFile):
         flattened_output = cleaned_output[0] | cleaned_output[1]
         if not validate_model_output(flattened_output):
             raise HTTPException(status_code=422, detail="Error validating output")
-        
+
         file.file.close()
-    
+
         if PRINT_DEBUG:
             print(f"DEBUG: Total time - {time.time() - start_time:.2} sec")
         curr_time = time.time()
         return flattened_output
-    
