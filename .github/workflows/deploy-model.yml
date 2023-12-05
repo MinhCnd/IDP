@@ -42,11 +42,11 @@ jobs:
 
     - name: Deploy image to cloud run
       run: gcloud run deploy ${{ vars.SERVICE_NAME }} \
-      --image=${{ env.IMAGE_NAME }} \
-      --cpu=1 \
-      --max-instances=2 \
-      --memory=4Gi \
-      --port=8080 \
-      --region=${{ vars.GCP_REGION }} \
-      --cpu-boost
+        --image=${{ env.IMAGE_NAME }} \
+        --cpu=1 \
+        --max-instances=2 \
+        --memory=4Gi \
+        --port=8080 \
+        --region=${{ vars.GCP_REGION }} \
+        --cpu-boost
       
