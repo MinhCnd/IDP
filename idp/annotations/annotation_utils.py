@@ -37,6 +37,8 @@ LABEL_STR_TO_CLASS_MAP = {
     "last_reading": Classes.LAST_READING,
 }
 
+CLASS_TO_LABEL_STR_MAP = {v: k for (k, v) in LABEL_STR_TO_CLASS_MAP.items()}
+
 CLASS_TO_LABEL_MAP = {
     Classes.OTHER: "B-OTHER",
     Classes.BALANCE_STILL_OWING: "B-BALANCE_STILL_OWING",
