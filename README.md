@@ -20,3 +20,6 @@ docker build -t <image_name> .
 
 # Run docker image, mapping port 8080 to container's host
 docker run --name <container_name> -d -i -t -p 8080:8080 watercare-idp
+
+# Run tests
+poetry run pytest

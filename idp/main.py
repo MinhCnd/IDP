@@ -15,7 +15,6 @@ import torch
 from idp.annotations.bbox_utils import (
     unnormalize_box,
     normalize_box,
-    merge_box_extremes,
     is_box_a_within_box_b,
 )
 from idp.annotations.annotation_utils import (
@@ -66,74 +65,125 @@ def get_text_box_pairs(image):
     return (texts, boxes)
 
 
-def clean_model_output(output: Dict[str, any]) -> Dict[str, any]:
-    """Clean model's output to value and strings where appropriate"""
-    try:
-        class_to_label = {v: k for k, v in LABEL_STR_TO_CLASS_MAP.items()}
-        cleaned_output = {}
+def charge_text_to_number(input: str) -> float:
+    match = re.search(r"(\d+.\d+)(\s?cr)?", input)
 
-        # Text to numbers
-        for key in list(
-            filter(
-                lambda key: key
-                in [
-                    class_to_label[Classes.BALANCE_STILL_OWING],
-                    class_to_label[Classes.WATER_CONSUMPTION],
-                    class_to_label[Classes.WASTEWATER_CONSUMPTION],
-                    class_to_label[Classes.WASTEWATER_FIXED],
-                    class_to_label[Classes.BALANCE_CURRENT_CHARGES],
-                    class_to_label[Classes.TOTAL_DUE],
-                ],
-                output.keys(),
-            )
-        ):
-            matched_output = re.search(r"(\d+.\d+)(\scr)?", output[key]["text"])
-            if matched_output.groups() is not None:
-                cleaned_output[key] = float(matched_output.groups()[0]) * (
-                    -1 if matched_output.groups()[1] else 1
+    if match is None:
+        raise ValueError(
+            f"Charge text format incorrect, expect <1+ digit>.<1+ digit> <cr ?>, got {input}"
+        )
+    else:
+        val = float(match.groups()[0])
+        return val if match.groups()[1] is None else (val * -1.0)
+
+
+def consumption_detail_to_number(input: str) -> float:
+    match = re.search(r"\d+.\d+(?=\s?kL)", input)
+    if match is None:
+        raise ValueError(
+            f"Consumption text format incorrect, expect <1+ digit>.<1+ digit><kL ?>, got {input}"
+        )
+    else:
+        return float(match.group())
+
+
+def wastewater_detail_to_number(input: str) -> int:
+    match = re.search(r"\d+(?=\s?days)", input)
+    if match is None:
+        raise ValueError(
+            f"Wastewater detail format incorrect, expect <1+ digit><days ?>, got {input}"
+        )
+    else:
+        return int(match.group())
+
+
+def reading_details_to_txt(input: str) -> str:
+    match = re.search(r"\d{1,2}-\w{3}-\d{1,2}", input)
+    if match is None:
+        raise ValueError(
+            f"Reading details incorrect, expect (\\d{1,2}-\\w{3}-\\d{1,2}), got {input}"
+        )
+    else:
+        return match.group()
+
+
+def process_model_output(input: Dict[str, str]) -> Dict[str, Union[float, str]]:
+    """Process model's output to desired format
+
+    Inputs:
+        input - Dict of [label string, extracted text value]
+
+    Output:
+        Dict of [label string, float or string depending on data field]
+    """
+
+    if len(input.keys()) == 0:
+        raise ValueError("Input cannot be empty")
+
+    for key in input.keys():
+        if key not in LABEL_STR_TO_CLASS_MAP.keys():
+            raise ValueError(f"{key} is not a valid model output key")
+
+    class_to_label = {v: k for k, v in LABEL_STR_TO_CLASS_MAP.items()}
+    cleaned_output = {}
+
+    cleaned_output.update(
+        {
+            item[0]: charge_text_to_number(item[1])
+            for item in dict(
+                filter(
+                    lambda item: item[0]
+                    in [
+                        class_to_label[Classes.BALANCE_STILL_OWING],
+                        class_to_label[Classes.WATER_CONSUMPTION],
+                        class_to_label[Classes.WASTEWATER_CONSUMPTION],
+                        class_to_label[Classes.WASTEWATER_FIXED],
+                        class_to_label[Classes.BALANCE_CURRENT_CHARGES],
+                        class_to_label[Classes.TOTAL_DUE],
+                    ],
+                    input.items(),
                 )
+            ).items()
+        }
+    )
 
-        for key in list(
-            filter(
-                lambda key: key
-                in [
-                    class_to_label[Classes.WATER_CONSUMPTION_DETAILS],
-                    class_to_label[Classes.WASTEWATER_CONSUMPTION_DETAILS],
-                ],
-                output.keys(),
-            )
-        ):
-            matched_output = re.search(r"\d+.\d+(?=\skL)", output[key]["text"])
-            cleaned_output[key] = (
-                float(matched_output.group()) if matched_output else None
-            )
+    cleaned_output.update(
+        {
+            item[0]: consumption_detail_to_number(item[1])
+            for item in dict(
+                filter(
+                    lambda item: item[0]
+                    in [
+                        class_to_label[Classes.WATER_CONSUMPTION_DETAILS],
+                        class_to_label[Classes.WASTEWATER_CONSUMPTION_DETAILS],
+                    ],
+                    input.items(),
+                )
+            ).items()
+        }
+    )
 
-        key = class_to_label[Classes.WASTEWATER_FIXED_DETAILS]
-        if key in output.keys():
-            matched_output = re.search(r"\d+(?=\sdays)", output[key]["text"])
-            cleaned_output[key] = (
-                float(matched_output.group()) if matched_output else None
-            )
-        else:
-            cleaned_output[key] = None
+    key = class_to_label[Classes.WASTEWATER_FIXED_DETAILS]
+    if key in input.keys():
+        cleaned_output[key] = wastewater_detail_to_number(input[key])
 
-        for key in list(
-            filter(
-                lambda key: key
-                in [
-                    class_to_label[Classes.THIS_READING],
-                    class_to_label[Classes.LAST_READING],
-                ],
-                output.keys(),
-            )
-        ):
-            matched_output = re.search(r"\d{1,2}-\w{3}-\d{1,2}", output[key]["text"])
-            cleaned_output[key] = matched_output.group() if matched_output else None
+    cleaned_output.update(
+        {
+            item[0]: reading_details_to_txt(item[1])
+            for item in dict(
+                filter(
+                    lambda item: item[0]
+                    in [
+                        class_to_label[Classes.THIS_READING],
+                        class_to_label[Classes.LAST_READING],
+                    ],
+                    input.items(),
+                )
+            ).items()
+        }
+    )
 
-        return cleaned_output
-
-    except ValueError:
-        print("Unable to clean model output")
+    return cleaned_output
 
 
 def validate_model_output(output: Dict[str, Union[float, str, None]]) -> bool:
@@ -272,14 +322,14 @@ async def create_upload_file(file: UploadFile):
         ]
 
         class_to_label_str_map = {v: k for k, v in LABEL_STR_TO_CLASS_MAP.items()}
-        output = [
-            {
-                class_to_label_str_map[key]: {"text": "", "box": []}
-                for key, value in CLASS_TO_LABEL_MAP.items()
-                if key != Classes.OTHER
-            }
-            for page in range(pages)
-        ]
+        # output = [
+        #     {
+        #         class_to_label_str_map[key]: {"text": "", "box": []}
+        #         for key, value in CLASS_TO_LABEL_MAP.items()
+        #         if key != Classes.OTHER
+        #     }
+        #     for page in range(pages)
+        # ]
         output = [
             {
                 class_to_label_str_map[key]: {"text": ""}
@@ -294,7 +344,7 @@ async def create_upload_file(file: UploadFile):
                 if key == Classes.OTHER:
                     continue
 
-                output[page_indx][class_to_label_str_map[key]]["text"] = "".join(
+                output[page_indx][class_to_label_str_map[key]] = "".join(
                     [
                         text
                         for text, prediction, box in zip(
@@ -305,23 +355,23 @@ async def create_upload_file(file: UploadFile):
                         if (prediction == value and box != [0, 0, 0, 0])
                     ]
                 )
-                output[page_indx][class_to_label_str_map[key]][
-                    "box"
-                ] = merge_box_extremes(
-                    [
-                        box
-                        for text, prediction, box in zip(
-                            true_texts[page_indx],
-                            true_predictions[page_indx],
-                            true_boxes[page_indx],
-                        )
-                        if (prediction == value and box != [0, 0, 0, 0])
-                    ]
-                )
+                # output[page_indx][class_to_label_str_map[key]][
+                #     "box"
+                # ] = merge_box_extremes(
+                #     [
+                #         box
+                #         for text, prediction, box in zip(
+                #             true_texts[page_indx],
+                #             true_predictions[page_indx],
+                #             true_boxes[page_indx],
+                #         )
+                #         if (prediction == value and box != [0, 0, 0, 0])
+                #     ]
+                # )
 
         # #trim empty outputs
         def item_not_empty(item):
-            return len(item[1]["text"]) != 0
+            return len(item[1]) != 0
 
         filtered_output = [
             dict(filter(item_not_empty, page_output.items())) for page_output in output
@@ -333,7 +383,7 @@ async def create_upload_file(file: UploadFile):
         curr_time = time.time()
 
         # Convert model output to usable format
-        cleaned_output = list(map(clean_model_output, filtered_output))
+        cleaned_output = list(map(process_model_output, filtered_output))
         flattened_output = cleaned_output[0] | cleaned_output[1]
         if not validate_model_output(flattened_output):
             raise HTTPException(status_code=422, detail="Error validating output")
